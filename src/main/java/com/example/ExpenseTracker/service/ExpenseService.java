@@ -1,19 +1,40 @@
 package com.example.ExpenseTracker.service;
 
 import com.example.ExpenseTracker.Dto.CreateExpenseDto;
+import com.example.ExpenseTracker.Dto.RCExpenseDto;
 import com.example.ExpenseTracker.entity.Expense;
 import com.example.ExpenseTracker.entity.User;
 import com.example.ExpenseTracker.repository.ExpenseRepository;
 import com.example.ExpenseTracker.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
+@AllArgsConstructor
 public class ExpenseService {
-    private ExpenseRepository expenseRepository;
-    private UserRepository userRepository;
-    public Expense createExpense(Long userId, CreateExpenseDto createExpenseDto) {
+    private final ExpenseRepository expenseRepository;
+    private final UserRepository userRepository;
+
+    private RCExpenseDto mapToDto(Expense expense) {
+
+        RCExpenseDto dto = new RCExpenseDto();
+
+        dto.setId(expense.getId());
+        dto.setAmount(expense.getAmount());
+        dto.setDescription(expense.getDescription());
+        dto.setCategory(expense.getCategory());
+        dto.setDate(expense.getDate());
+        dto.setUserId(expense.getUser().getId());
+
+        return dto;
+    }
+
+
+    public RCExpenseDto createExpense(Long userId, CreateExpenseDto createExpenseDto) {
 
         User user = userRepository.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         Expense expense = new Expense();
@@ -22,6 +43,21 @@ public class ExpenseService {
         expense.setDescription(createExpenseDto.getDescription());
         expense.setDate(createExpenseDto.getDate());
         expense.setUser(user);
-        return expenseRepository.save(expense);
+        Expense ex= expenseRepository.save(expense);
+        RCExpenseDto response = new RCExpenseDto();
+        response.setId(ex.getId());
+        response.setAmount(ex.getAmount());
+        response.setCategory(ex.getCategory());
+        response.setDescription(ex.getDescription());
+        response.setDate(ex.getDate());
+        response.setUserId(user.getId());
+        return response;
+    }
+
+    public List<RCExpenseDto> getAllExpenses(Long userId) {
+        List<Expense> expenses= expenseRepository.findByUserId(userId);
+        return expenses.stream()
+                .map(this::mapToDto)
+                .toList();
     }
 }
