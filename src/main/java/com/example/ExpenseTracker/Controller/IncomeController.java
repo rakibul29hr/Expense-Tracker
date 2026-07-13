@@ -1,0 +1,35 @@
+package com.example.ExpenseTracker.Controller;
+
+import com.example.ExpenseTracker.Dto.CreateExpenseDto;
+import com.example.ExpenseTracker.Dto.CreateIncomeDto;
+import com.example.ExpenseTracker.Dto.RCExpenseDto;
+import com.example.ExpenseTracker.Dto.RCIncomeDto;
+import com.example.ExpenseTracker.service.IncomeService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api/users/{userId}/income")
+public class IncomeController {
+    private final IncomeService incomeService;
+
+
+
+    @PostMapping
+    public ResponseEntity<RCIncomeDto> addIncome(
+            @PathVariable Long userId,
+            @RequestBody CreateIncomeDto income) {
+        return ResponseEntity.status(HttpStatus.OK).body(incomeService.createIncome(userId,income));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RCIncomeDto>> findAllExpenses(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(incomeService.getAllExpenses(userId));
+    }
+
+}
