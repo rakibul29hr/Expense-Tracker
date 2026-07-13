@@ -66,7 +66,9 @@ public class ExpenseService {
 
         return mapToDto(
                 expenseRepository.findByIdAndUserId(expenseId, userId)
-                        .orElseThrow(() -> new RuntimeException("Expense not found"))
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Expense not found"))
         );
     }
 

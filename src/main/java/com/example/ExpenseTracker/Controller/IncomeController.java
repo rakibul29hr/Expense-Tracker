@@ -32,4 +32,31 @@ public class IncomeController {
         return ResponseEntity.status(HttpStatus.OK).body(incomeService.getAllExpenses(userId));
     }
 
+
+    @GetMapping("/{incomeId}")
+    public ResponseEntity<RCIncomeDto> findById(@PathVariable Long userId, @PathVariable Long incomeId) {
+        return ResponseEntity.status
+                (HttpStatus.OK)
+                .body(incomeService.
+                        getIncomeById(userId,incomeId   ));
+    }
+
+    @PutMapping("/{incomeId}")
+    public ResponseEntity<RCIncomeDto> updateExpense(
+            @PathVariable Long userId,
+            @PathVariable Long incomeId,
+            @RequestBody CreateIncomeDto dto) {
+
+        return ResponseEntity.status(HttpStatus.OK).
+                body(incomeService.updateIncome(userId, incomeId, dto));
+    }
+
+    @DeleteMapping("/{incomeId}")
+    public ResponseEntity<Void> deleteExpense(
+            @PathVariable Long userId,
+            @PathVariable Long incomeId) {
+        incomeService.deleteIncome(userId, incomeId);
+        return ResponseEntity.noContent().build()    ;
+    }
+
 }

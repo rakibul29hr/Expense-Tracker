@@ -1,11 +1,8 @@
 package com.example.ExpenseTracker.service;
 
 
-import com.example.ExpenseTracker.Dto.CreateExpenseDto;
 import com.example.ExpenseTracker.Dto.CreateIncomeDto;
-import com.example.ExpenseTracker.Dto.RCExpenseDto;
 import com.example.ExpenseTracker.Dto.RCIncomeDto;
-import com.example.ExpenseTracker.entity.Expense;
 import com.example.ExpenseTracker.entity.Income;
 import com.example.ExpenseTracker.entity.User;
 import com.example.ExpenseTracker.repository.IncomeRepository;
@@ -68,4 +65,46 @@ public class IncomeService {
                 .map(this::mapToDto)
                 .toList();
     }
+
+
+
+    public RCIncomeDto getIncomeById(Long userId, Long incomeId) {
+
+        return mapToDto(
+                incomeRepository.findByIdAndUserId(incomeId, userId)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND
+                                ,"Income or User not found"))
+        );
+
+    }
+
+    public RCIncomeDto updateIncome(Long userId,
+                                      Long incomeId,
+                                      CreateIncomeDto dto) {
+
+        Income income    = incomeRepository
+                .findByIdAndUserId(incomeId, userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Income or User not found"));
+
+        income.setAmount(dto.getAmount());
+        income.setDescription(dto.getDescription());
+        income.setDate(dto.getDate());
+
+        return mapToDto(incomeRepository.save(income));
+    }
+
+
+    public void deleteIncome (Long userId, Long incomeId) {
+
+        Income income    = incomeRepository
+                .findByIdAndUserId(incomeId, userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Expense not found"));
+        incomeRepository.delete(income);
+    }
+
 }
