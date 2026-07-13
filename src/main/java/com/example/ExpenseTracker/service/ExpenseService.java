@@ -54,10 +54,43 @@ public class ExpenseService {
         return response;
     }
 
+//Get All Expense
     public List<RCExpenseDto> getAllExpenses(Long userId) {
         List<Expense> expenses= expenseRepository.findByUserId(userId);
         return expenses.stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+
+    public RCExpenseDto getExpenseById(Long userId, Long expenseId) {
+
+        return mapToDto(
+                expenseRepository.findByIdAndUserId(expenseId, userId)
+                        .orElseThrow(() -> new RuntimeException("Expense not found"))
+        );
+    }
+
+    public RCExpenseDto updateExpense(Long userId,
+                                 Long expenseId,
+                                 CreateExpenseDto dto) {
+
+        Expense expense = expenseRepository
+                .findByIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Expense or User not found"));
+
+        expense.setAmount(dto.getAmount());
+        expense.setCategory(dto.getCategory());
+        expense.setDescription(dto.getDescription());
+        expense.setDate(dto.getDate());
+
+        return mapToDto(expenseRepository.save(expense));
+    }
+
+    public void deleteExpense(Long userId, Long expenseId) {
+
+        Expense expense = expenseRepository
+                .findByIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Expense not found"));
+        expenseRepository.delete(expense);
     }
 }

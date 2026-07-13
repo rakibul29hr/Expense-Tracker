@@ -26,4 +26,27 @@ public class ExpenseController {
     public ResponseEntity<List<RCExpenseDto>> findAllExpenses(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(expenseService.getAllExpenses(userId));
     }
+
+    @GetMapping("/{expenseId}")
+    public ResponseEntity<RCExpenseDto> findById(@PathVariable Long userId, @PathVariable Long expenseId) {
+        return ResponseEntity.status(HttpStatus.OK).body(expenseService.getExpenseById(userId,expenseId));
+    }
+
+    @PutMapping("/{expenseId}")
+    public ResponseEntity<RCExpenseDto> updateExpense(
+            @PathVariable Long userId,
+            @PathVariable Long expenseId,
+            @RequestBody CreateExpenseDto dto) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(expenseService.updateExpense(userId, expenseId, dto));
+    }
+
+    @DeleteMapping("/{expenseId}")
+    public ResponseEntity<Void> deleteExpense(
+            @PathVariable Long userId,
+            @PathVariable Long expenseId) {
+        expenseService.deleteExpense(userId, expenseId);
+        return ResponseEntity.noContent().build()    ;
+    }
+
 }
